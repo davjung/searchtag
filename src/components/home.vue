@@ -39,10 +39,10 @@
 
     <div id="rightSide">
       <div id="rightContent">
+        <h2 style="text-align:left">Students</h2>
         <div id="myDropdown" ref="myDropdown" class="dropdown-content" >
-          <div v-if="validStudents.length == 0">- No students in these schools -</div>
+          <div v-if="validStudents.length == 0" style="height:319px">- No students in these schools -</div>
           <div v-for="stu in validStudents" :key="stu.id">
-            <!-- <button id=buttonval style="display:none" v-on:click="handler(stu.country)">{{stu.country}}</button> -->
             <v-card height="150px">
               <v-card-title><b>{{stu.name.first}} {{stu.name.last}}</b></v-card-title>
               <v-card-text>{{stu.schoolStr}}</v-card-text>
@@ -215,7 +215,8 @@ a {
   width: 250px;
   background: LightGray;
   float: left;
-  border: 1px solid
+  border: 1px solid;
+  height: 400px;
 }
 
 #rightSide {
@@ -236,6 +237,11 @@ a {
 
 #schoolList label {
   display: inline;
+}
+
+#home {
+  position: relative;
+  top: 50px;
 }
 
 </style>
