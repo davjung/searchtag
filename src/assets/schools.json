@@ -1,12 +1,43 @@
-[{"id":2890976,"fname":"David","lname": "Jung", "schools": ["WCAS", "McCormick"]},
-
-  {"id":9897779,"fname":"David","lname": "Lee", "schools": [ "McCormick"]},
+[
+  { 
+    "name": "Weinberg College of Arts and Sciences",
+    "code": "WCAS",
+    "num": null
+  },
   
-  {"id":8977789,"fname":"Daniel","lname": "Kang", "schools": ["WCAS"]},
+  {
+    "name": "McCormick School of Engineering and Applied Science",
+    "code": "McCormick",
+    "num": null
+  },
   
-  {"id":4838189,"fname":"Samuel","lname": "Detjen", "schools": ["SESP"]},
+  {
+    "name": "Medill School of Music",
+    "code": "Medill",
+    "num": null
+  },
   
-  {"id":7732021,"fname":"David","lname": "Jung", "schools": ["WCAS", "McCormick"]},
+  {
+    "name": "School of Communication",
+    "code": "Comm",
+    "num": null
+  },
   
-  {"id":1234567,"fname":"Kevin","lname": "Lee", "schools": ["Bienen"]}
-]
+  {
+    "name": "School of Education and Social Policy",
+    "code": "SESP",
+    "num": null
+  },
+  
+  {
+    "name": "Bienen School of Music",
+    "code": "Bienen",
+    "num": null
+  },
+  
+  {
+    "name": "School of Professional Studies",
+    "code": "SPS",
+    "num": null
+  }
+]  
