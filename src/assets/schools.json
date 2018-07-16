@@ -1,0 +1,12 @@
+[{"id":2890976,"fname":"David","lname": "Jung", "schools": ["WCAS", "McCormick"]},
+
+  {"id":9897779,"fname":"David","lname": "Lee", "schools": [ "McCormick"]},
+  
+  {"id":8977789,"fname":"Daniel","lname": "Kang", "schools": ["WCAS"]},
+  
+  {"id":4838189,"fname":"Samuel","lname": "Detjen", "schools": ["SESP"]},
+  
+  {"id":7732021,"fname":"David","lname": "Jung", "schools": ["WCAS", "McCormick"]},
+  
+  {"id":1234567,"fname":"Kevin","lname": "Lee", "schools": ["Bienen"]}
+]
