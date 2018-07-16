@@ -1,6 +1,6 @@
 # searchtag
 
-> Tag list of students
+> Tags a list of students by Schools
 
 ## Build Setup
 
@@ -13,9 +13,8 @@ npm run dev
 
 # build for production with minification
 npm run build
-
-# build for production and view the bundle analyzer report
-npm run build --report
 ```
 
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+## Details
+> Data received from https://randomuser.me/api <br>
+> School information in schools.json
