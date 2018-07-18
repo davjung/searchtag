@@ -15,6 +15,7 @@ npm run dev
 npm run build
 ```
 
-## Details
+## Data
 > Data received from https://randomuser.me/api <br>
-> School information in schools.json
+> School information in schools.json. Attribute name is for left side tagging, attribute code is for right side information
+

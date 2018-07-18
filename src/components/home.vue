@@ -3,9 +3,8 @@
     <div id="leftSide">
       <div id="leftContent">
         
-        <div id="search">
+        <div id="searchWrapper">
           <h2 style="text-align:left">Search</h2>
-
           <div id="search">
             <div class="search-form searchblox">
               <form>
@@ -13,13 +12,6 @@
               </form>
             </div>
           </div>
-        
-          <div class="dropdown">
-            <div id="myDropdown" ref="myDropdown" class="dropdown-content" >
-                
-            </div>        
-          </div>
-
         </div>
         <br>
 
@@ -60,23 +52,16 @@
 
     <div id="rightSide">
       <div id="rightContent">
-        <h2 style="text-align:left">Students</h2>
-        <div id="myDropdown" ref="myDropdown" class="dropdown-content" >
-          <div v-if="validStudents.length == 0" style="height:100%">- No students in these schools -</div>
-
-          <div id="cards">
-            <card
-              v-for="stu in validStudents"
-              v-bind:key="stu.id"
-              v-bind:student = "stu"
-            ></card>
-          </div>
-
-
-
-
-
-        </div> 
+        <h2 style="text-align:left">Students</h2>        
+        <div v-if="validStudents.length == 0" style="height:100%">- No students in these schools -</div>
+        <div id="cards">
+          <card
+            v-for="stu in validStudents"
+            v-bind:key="stu.id"
+            v-bind:studentData = "stu"
+            v-bind:dataMap = dm
+          ></card>
+        </div>
       </div>
     </div>
 
@@ -85,7 +70,7 @@
 
 <script>
 
-var log = function (l) {
+const log = function (l) {
    console.log(l);
 }
 
@@ -99,6 +84,14 @@ export default {
   },
   data () {
     return {
+      dm: {
+        name: "fullName",      // first name, last name string
+        mail: "email",         // email string
+        phone: "phone",        // phone number
+        image: "img",          // picture url
+        title: "title",        // title string
+        schoolStr: "schoolStr" // string with all schools listed
+      },
       checkedSchools: [],
       students: [],
       validStudents: [],
@@ -106,10 +99,9 @@ export default {
     }
   },
 
-  created() {
-    this.createData();
+  mounted() {
     this.createSchools();
-
+    this.createData(); // get student data from API, add .schools[]
   },
 
   watch: {
@@ -121,26 +113,38 @@ export default {
 
   methods: {
 
-    createData: function() {
-      var t = [];
+    createSchools: function() { // initialize this.schoolsList[]
+      this.schoolsList = sch[0];
+    },
 
-      this.axios.get('https://randomuser.me/api/?results=500&inc=name,gender,nat&noinfo')
+    createData: function() { // get student data from API, add .schools[], fix name to first + last
+      let t = [];
+
+      this.axios.get('https://randomuser.me/api/?results=50&inc=name,gender,phone,email,picture&noinfo')
       .then(response => {
-        var r = response.data.results;
+        const r = response.data.results;
         
-        r.forEach(element => {
-          t.push(element);
+        r.forEach(stu => {
+          t.push(stu);
         })
-        t.forEach(element => {
-          element.schools = [];
-          var schoolNum = Math.floor(Math.random() * 2) + 1;
 
-          for (var i = 0; i<schoolNum; i++) {
-            var code = Math.floor(Math.random() * 7) + 1;
-            if (!element.schools.includes(this.schoolCode(code))) {
-              element.schools.push(this.schoolCode(code));
+        t.forEach(stu => { //foreach student
+          stu.schools = [];
+          const schoolNum = Math.floor(Math.random() * 2) + 1; // random, 1 or 2 schools
+
+          for (let i = 0; i<schoolNum; i++) {   // what school(s) do you go to? (.schools[])
+            let code = Math.floor(Math.random() * 7) + 1;
+            if (!stu.schools.includes(this.schoolCode(code))) {
+              stu.schools.push(this.schoolCode(code));
             }
           }
+          let x = stu.name.first.concat(" ").concat(stu.name.last)
+          stu.fullName = x;
+
+          let img = stu.picture.large;
+          stu.img = img;
+
+
         })
 
         this.students = this.schoolString(t);
@@ -152,7 +156,7 @@ export default {
 
     },
 
-    schoolCode: function(code) {
+    schoolCode: function(code) { // randomized value is assigned to school when creating data
       if (code > 7){return "invalid code"}
       else {
         if (code == 1) {return "WCAS"}
@@ -165,54 +169,37 @@ export default {
       }
     },
 
-    updateValidStudents: function() {
-      this.validStudents = [];
-      
-      var i = document.getElementById("myInput").value.toUpperCase();
-
-      this.students.forEach(s => {
-        var marker = 1;
-        name = s.name.first.concat(" ").concat(s.name.last);
-
-        this.checkedSchools.forEach(sc => {
-          if (!s.schools.includes(sc)) {marker = 0;}
-        })
-        if (name.toUpperCase().indexOf(i) == -1) {marker = 0;}
-
-        if (marker == 1) {this.validStudents.push(s);}
-
-      })  
-    },
-
-    schoolString: function(t) {
+    schoolString: function(t) { // convert schools[] into a string value for display
       t.forEach(s => {
         s.schoolStr = '';
         s.schools.forEach(sc => {
           s.schoolStr = s.schoolStr.concat(sc).concat(", ");
-
         })
         s.schoolStr = s.schoolStr.slice(0, -2);
       })
       return t;
     },
 
-    tagCount: function() {
-      var v = this.validStudentsInternal();
-      this.schoolsList.forEach(school => {
-        var n = 0;
-        v.forEach(student => {
-          if (student.schools.includes(school.code)) {
-            n++;
-          }
+    updateValidStudents: function() { //filter out students that don't match searchbar or tags
+      this.validStudents = [];
+      let i = document.getElementById("myInput").value.toUpperCase();
+      this.students.forEach(s => {
+        let marker = 1;
+        let name = s.name.first.concat(" ").concat(s.name.last);
+        
+        this.checkedSchools.forEach(sc => {  // if student is not in all of the checked schools, cut
+          if (!s.schools.includes(sc)) {marker = 0;}
         })
-        document.getElementById(school.code).innerHTML = "(" + n + ")";
-      })
+
+        if (name.toUpperCase().indexOf(i) == -1) {marker = 0;} //if input doesn't index on your name, cut
+        if (marker == 1) {this.validStudents.push(s);}
+      })  
     },
 
-    validStudentsInternal: function() {
-      var v = [];
+    findValidStudents: function() { //return valid students without touching validStudents[]
+      let v = [];
       this.students.forEach(s => {
-          var marker = 1;
+          let marker = 1;
           this.checkedSchools.forEach(sc => {
             if (!s.schools.includes(sc)) {marker = 0;}
           })
@@ -221,111 +208,74 @@ export default {
       return v;
     },
     
-    createSchools: function() {
-      this.schoolsList = sch[0];
+    tagCount: function() { // find # of students, for each school, that are in validStudents[]
+      const v = this.findValidStudents();
+      this.schoolsList.forEach(school => {
+        let n = 0;
+        v.forEach(student => {
+          if (student.schools.includes(school.code)) {
+            n++;
+          }
+        })
+        document.getElementById(school.code).innerHTML = "(" + n + ")";
+      })
     },
-
-    filterFunction: function() {
-      var input, filter, a, div, i;
-      input = document.getElementById("myInput").value;
-      filter = input.toUpperCase();
-
-      div = document.getElementById("myDropdown"); // div of buttons
-      a = div.getElementsByTagName("button");      // list of buttons
-
-      for (i = 0; i < a.length; i++) {
-        if (a[i].innerHTML.toUpperCase().indexOf(filter) > -1) {
-          a[i].style.display = "block";
-        } 
-        else {
-          a[i].style.display = "none";
-        }
-        if (filter.length < 2) {
-          a[i].style.display = "none";
-        }
-      }
-    },
-
   }
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
+
 <style scoped>
-@import '../assets/css/print.css';
-@import '../assets/css/styles.css';
+  @import '../assets/css/print.css';
+  @import '../assets/css/styles.css';
 
 
-h1, h2 {
-  font-weight: normal;
-}
-a {
-  color: #42b983;
-}
+  h1, h2 {
+    font-weight: normal;
+  }
+  a {
+    color: #42b983;
+  }
 
-#home {
-  margin: 0 auto;
-}
+  #home {
+    margin: 0 auto;
+  }
 
-#leftSide{
-  width: 250px;
-  background: LightGray;
-  float: left;
-  border: 1px solid;
-  height: 100vh;
+  #leftSide{
+    width: 250px;
+    background: LightGray;
+    float: left;
+    border: 1px solid;
+    height: 100vh;
 
-}
+  }
 
-#rightSide {
-  margin-left: 250px;
-  border: 1px solid;
-  height: 100vh;
-  overflow: scroll;
-}
+  #rightSide {
+    margin-left: 250px;
+    border: 1px solid;
+    height: 100vh;
+    overflow: scroll;
+  }
 
-#leftContent {
-  margin: 10%;
-  height: 100%;
-  /* background: red; */
-}
-#rightContent {
-  margin: 25px;
-  /* background: red; */
-  height: 80%;
-}
+  #leftContent {
+    margin: 10%;
+    height: 100%;
+    /* background: red; */
+  }
+  #rightContent {
+    margin: 25px;
+    /* background: red; */
+    height: 80%;
+  }
 
-#schoolList label {
-  display: inline;
-}
+  #schoolList label {
+    display: inline;
+  }
 
-#home {
-  position: relative;
-  height: 100vh;
-}
-
-/* #cards {
-  position: relative;
-  left: 2.5%;
-  top: 30px;
-} */
-
-/* form {
-  text-align: left;
-  border: 1px solid white;
-  border-radius: 2px;
-}
-
-form input {
-  position: relative;
-  left: 5px;
-  font-size: 90%;
-  width: 185px;
-}
-
-input:focus {
-  outline: none;
-} */
-
+  #home {
+    position: relative;
+    height: 100vh;
+  }
 
 
 </style>
